@@ -1,0 +1,74 @@
+import { NextResponse } from "next/server";
+import Groq from "groq-sdk";
+import { tutorSystemPrompt } from "@/lib/tutorPrompt";
+
+
+const client = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
+});
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+
+    const {
+      history = [],            // historique des séances précédentes
+      feedback = "Aucun",      // facile / moyen / difficile
+      availableMinutes = 20,   // temps dispo pour la séance
+      profile = { dailyMinutes: 20 },
+    } = body || {};
+
+    // Injecter le temps d'entraînement dans le prompt
+    const systemPrompt = tutorSystemPrompt.replace(
+      "un certain nombre de minutes par jour",
+      `${profile.dailyMinutes ?? 20} minutes par jour`
+    );
+
+    const userPrompt = `
+Historique (séances précédentes) :
+${JSON.stringify(history, null, 2)}
+
+Feedback de la dernière séance :
+${feedback}
+
+Temps disponible aujourd'hui :
+${availableMinutes} minutes
+
+Concevoir la prochaine séance en respectant le format JSON demandé.
+    `;
+
+    const completion = await client.chat.completions.create({
+      model: process.env.GROQ_MODEL || "llama-3.1-8b-instant",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      response_format: { type: "json_object" },
+      temperature: 0.7,
+    });
+
+    const content = completion.choices[0]?.message?.content;
+
+    if (!content) {
+      return NextResponse.json(
+        { error: "Réponse vide du modèle Groq" },
+        { status: 500 }
+      );
+    }
+
+    // On parse le JSON renvoyé par le modèle
+    const sessionPlan = JSON.parse(content);
+
+    return NextResponse.json(sessionPlan);
+  } catch (error: any) {
+    console.error("Erreur /api/tutor :", error);
+
+    return NextResponse.json(
+      {
+        error: "Erreur côté serveur dans /api/tutor",
+        details: error?.message || error,
+      },
+      { status: 500 }
+    );
+  }
+}

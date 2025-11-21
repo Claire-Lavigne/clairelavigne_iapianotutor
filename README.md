@@ -1,36 +1,125 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎹 AI Piano Tutor — Coach de piano intelligent (Worship & Débutants)
 
-## Getting Started
+**AI Piano Tutor** est une application Next.js alimentée par l’IA, conçue pour accompagner un·e débutant·e total·e jusqu’à jouer des **chants chrétiens modernes (worship)** en seulement **12 semaines** grâce à un programme progressif, structuré et personnalisé.
 
-First, run the development server:
+---
+
+## ✨ Fonctionnalités
+
+### 🎯 Programme pédagogique intégré (12 semaines)
+Une progression complète, semaine par semaine :
+
+- Découverte du clavier  
+- Premiers accords  
+- Rythmes worship  
+- Renversements  
+- Main gauche  
+- Coordination  
+- Arpèges  
+- Build-ups  
+- Fills  
+- Chant complet en autonomie
+
+Chaque séance générée respecte les objectifs de la semaine.
+
+### 🧠 Génération intelligente via l’IA (Groq)
+L’API `/api/tutor` génère :
+
+- un résumé de séance  
+- 2 à 4 exercices  
+- conseils personnalisés  
+- questions de feedback  
+- séance structurée (5 min échauffement, 10 min technique, 5 min application)
+
+Le modèle utilisé : **Llama 3.1** via API **Groq** (gratuit et ultra-rapide).
+
+### 💾 Sauvegarde automatique (Supabase)
+Chaque séance est sauvegardée :
+
+- feedback  
+- durée  
+- semaine pédagogique  
+- chant travaillé  
+- plan complet au format JSON  
+- date
+
+### 🎛️ UI moderne (Next.js + Tailwind)
+- Page `/session` : génération de séance, timeline 12 semaines, sélection du chant, feedback  
+- Page `/history` : historique des séances  
+- Page `/plan` : plan pédagogique complet  
+- Timeline de progression  
+- Sélection manuelle de la semaine
+
+---
+
+## 🚀 Démo rapide des pages
+
+| Page | Rôle |
+|------|------|
+| `/session` | Séance du jour, IA, feedback, timeline |
+| `/history` | Historique enregistré via Supabase |
+| `/plan` | Détail des 12 semaines d'apprentissage |
+
+---
+
+## 🛠️ Installation
+
+### 1. Cloner le projet
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/.../ai-piano-tutor.git
+cd ai-piano-tutor
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Installer les dépendances
+`npm install`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Configuration `.env.local`
+```env
+GROQ_API_KEY=ta_cle_groq
+GROQ_MODEL=llama-3.1-8b-instant
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=ta_cle_anon
+```
 
-## Learn More
+### 4. Lancer en local
+`npm run dev`
 
-To learn more about Next.js, take a look at the following resources:
+## 📚 Structure du projet
+```
+app/
+  api/
+    tutor/
+      route.ts         → Génération des séances via IA
+  session/
+      page.tsx         → UI principale (séance du jour)
+  history/
+      page.tsx         → Historique des séances
+  plan/
+      page.tsx         → Plan 12 semaines
+components/
+  WeekProgress.tsx     → Timeline 12 semaines
+lib/
+  learningPlan.ts       → Programme pédagogique complet
+  tutorPrompt.ts        → Prompt système pour l’IA
+  supabaseClient.ts     → Client Supabase
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🛠️ Stack technique
+| Technologie          | Usage           |
+| -------------------- | --------------- |
+| **Next.js 14**       | Front + API     |
+| **React**            | UI              |
+| **TailwindCSS**      | Design          |
+| **Supabase**         | Base de données |
+| **Groq (Llama 3.1)** | IA              |
+| **TypeScript**       | Typage          |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🔮 Roadmap
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 🎧 Détection MIDI (notes jouées en direct)
+- 🔊 Audio d’exemples (rythmes, arpèges…)
+- 📈 Graphiques de progression
+- 📱 Version mobile
+- 📑 Export PDF des séances
